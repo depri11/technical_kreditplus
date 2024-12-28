@@ -16,7 +16,7 @@ import (
 	"github.com/depri11/technical_kreditplus/customer_service/internal/app/usecase"
 	"github.com/depri11/technical_kreditplus/customer_service/internal/pkg/db"
 	"github.com/depri11/technical_kreditplus/customer_service/internal/pkg/opentelemetry"
-	customer_proto "github.com/depri11/technical_kreditplus/protos"
+	"github.com/depri11/technical_kreditplus/protos"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 )
@@ -68,7 +68,7 @@ func main() {
 		Time:              5 * time.Minute,
 	}))
 
-	customer_proto.RegisterCustomerServiceServer(server, delivery)
+	protos.RegisterCustomerServiceServer(server, delivery)
 
 	go func() {
 		err := server.Serve(l)

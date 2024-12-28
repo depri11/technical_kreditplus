@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+package protos;
+
+option go_package = "./protos;protos";
+
+message CreateTransactionRequest {
+  string id = 1;
+  string customer_id = 2;
+  string contract_number = 3;
+  double otr = 4;
+  double admin_fee = 5;
+  double installment_amount = 6;
+  double interest_amount = 7;
+  string asset_name = 8;
+}
+
+message GetTransactionRequest {
+  string contract_number = 1;
+}
+
+message GetTransactionResponse {
+  string id = 1;
+  string customer_id = 2;
+  string contract_number = 3;
+  double otr = 4;
+  double admin_fee = 5;
+  double installment_amount = 6;
+  double interest_amount = 7;
+  string asset_name = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message UpdateTransactionRequest {
+  string id = 1;
+  string customer_id = 2;
+  string contract_number = 3;
+  double otr = 4;
+  double admin_fee = 5;
+  double installment_amount = 6;
+  double interest_amount = 7;
+  string asset_name = 8;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message DeleteTransactionRequest {
+  string contract_number = 1;
+}
+
+service transactionService {
+  rpc GetTransaction(GetTransactionRequest) returns (GetTransactionResponse);
+  rpc CreateTransaction(CreateTransactionRequest) returns (google.protobuf.Empty);
+  rpc UpdateTransaction(UpdateTransactionRequest) returns (google.protobuf.Empty);
+  rpc DeleteTransaction(DeleteTransactionRequest) returns (google.protobuf.Empty);
+}

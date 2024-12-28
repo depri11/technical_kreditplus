@@ -1,4 +1,4 @@
-CREATE TABLE customer (
+CREATE TABLE customers (
     id BIGSERIAL PRIMARY KEY,  -- UUID format, using PostgreSQL UUID type
     nik VARCHAR(20) NOT NULL,
     full_name VARCHAR(255) NOT NULL,

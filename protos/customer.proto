@@ -3,9 +3,9 @@ syntax = "proto3";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-package customer_proto;
+package protos;
 
-option go_package = "./;customer_proto";
+option go_package = "./protos;protos";
 
 message GetCustomerRequest {
   string nik = 1;

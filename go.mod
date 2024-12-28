@@ -6,7 +6,6 @@ toolchain go1.22.10
 
 require (
 	github.com/go-playground/validator v9.31.0+incompatible
-	github.com/golang/protobuf v1.5.4
 	github.com/gorilla/mux v1.8.1
 	github.com/rs/cors v1.11.1
 	github.com/spf13/viper v1.19.0

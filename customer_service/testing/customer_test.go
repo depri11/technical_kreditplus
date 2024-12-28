@@ -71,7 +71,7 @@ func Test_GetCustomer(t *testing.T) {
 				// Convert time.Time to *timestamp.Timestamp
 				dobTimestamp := timestamppb.New(dob)
 
-				err := repo.CreateCusstomer(context.Background(), &customer_proto.CreateCustomerRequest{
+				err := repo.CreateCustomer(context.Background(), &customer_proto.CreateCustomerRequest{
 					Nik:          "123456789",
 					FullName:     "CUSTOMER 1",
 					LegalName:    "CUSTOMER 1",
@@ -146,7 +146,7 @@ func Test_DeleteCustomer(t *testing.T) {
 				// Convert time.Time to *timestamp.Timestamp
 				dobTimestamp := timestamppb.New(dob)
 
-				err := repo.CreateCusstomer(context.Background(), &customer_proto.CreateCustomerRequest{
+				err := repo.CreateCustomer(context.Background(), &customer_proto.CreateCustomerRequest{
 					Nik:          "123456789",
 					FullName:     "CUSTOMER 1",
 					LegalName:    "CUSTOMER 1",
@@ -250,7 +250,7 @@ func Test_UpdateCustomer(t *testing.T) {
 				PhotoSelfie:  "selfie.jpg",
 			},
 			func() {
-				err := repo.CreateCusstomer(context.Background(), &customer_proto.CreateCustomerRequest{
+				err := repo.CreateCustomer(context.Background(), &customer_proto.CreateCustomerRequest{
 					Nik:          "123456789",
 					FullName:     "CUSTOMER 1",
 					LegalName:    "CUSTOMER 1",

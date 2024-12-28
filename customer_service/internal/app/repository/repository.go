@@ -25,7 +25,7 @@ func NewRepository(db *gorm.DB, cfg *config.Config) *repository {
 
 func (r *repository) GetCustomer(ctx context.Context, nik string) (*customer_proto.GetCustomerResponse, error) {
 	var customer models.Customer
-	err := r.db.Table("customer").Where("nik = ?", nik).Find(&customer).Error
+	err := r.db.Table("customers").Where("nik = ?", nik).Find(&customer).Error
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (r *repository) GetCustomer(ctx context.Context, nik string) (*customer_pro
 	return customerProto, nil
 }
 
-func (r *repository) CreateCusstomer(ctx context.Context, customerProto *customer_proto.CreateCustomerRequest) error {
+func (r *repository) CreateCustomer(ctx context.Context, customerProto *customer_proto.CreateCustomerRequest) error {
 	customer := &models.Customer{
 		Nik:          customerProto.Nik,
 		FullName:     customerProto.FullName,
@@ -60,7 +60,7 @@ func (r *repository) CreateCusstomer(ctx context.Context, customerProto *custome
 		PhotoKtp:     customerProto.PhotoKtp,
 		PhotoSelfie:  customerProto.PhotoSelfie,
 	}
-	return r.db.Table("customer").Create(&customer).Error
+	return r.db.Table("customers").Create(&customer).Error
 }
 
 func (r *repository) UpdateCustomer(ctx context.Context, customerProto *customer_proto.UpdateCustomerRequest) error {
@@ -86,7 +86,7 @@ func (r *repository) UpdateCustomer(ctx context.Context, customerProto *customer
 		PhotoSelfie:  customerProto.PhotoSelfie,
 	}
 
-	result := r.db.Table("customer").Save(&customer)
+	result := r.db.Table("customers").Save(&customer)
 
 	if result.Error != nil {
 		return result.Error
@@ -122,7 +122,7 @@ func (r *repository) DeleteCustomer(ctx context.Context, nik string) error {
 		PhotoSelfie:  customerDB.PhotoSelfie,
 	}
 
-	result := r.db.Table("customer").Where("nik = ?", nik).Delete(&customer)
+	result := r.db.Table("customers").Where("nik = ?", nik).Delete(&customer)
 
 	if result.Error != nil {
 		return result.Error

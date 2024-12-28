@@ -29,7 +29,7 @@ func (u *usecase) GetCustomer(ctx context.Context, id string) (*customer_proto.G
 }
 
 func (u *usecase) CreateCustomer(ctx context.Context, customer *customer_proto.CreateCustomerRequest) error {
-	return u.repo.CreateCusstomer(ctx, customer)
+	return u.repo.CreateCustomer(ctx, customer)
 }
 
 func (u *usecase) UpdateCustomer(ctx context.Context, customer *customer_proto.UpdateCustomerRequest) error {
