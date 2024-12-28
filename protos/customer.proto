@@ -1,11 +1,14 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
 package customer_proto;
 
 option go_package = "./;customer_proto";
 
 message GetCustomerRequest {
-  string id = 1;
+  string nik = 1;
 }
 
 message GetCustomerResponse {
@@ -14,12 +17,42 @@ message GetCustomerResponse {
   string full_name = 3;
   string legal_name = 4;
   string place_of_birth = 5;
-  string date_of_birth = 6;
-  string salary = 7;
+  google.protobuf.Timestamp date_of_birth = 6;
+  double salary = 7;
   string photo_ktp = 8;
   string photo_selfie = 9;
 }
 
+message CreateCustomerRequest {
+  string nik = 1;
+  string full_name = 2;
+  string legal_name = 3;
+  string place_of_birth = 4;
+  google.protobuf.Timestamp date_of_birth = 5;
+  double salary = 6;
+  string photo_ktp = 7;
+  string photo_selfie = 8;
+}
+
+message UpdateCustomerRequest {
+  string id = 1;
+  string nik = 2;
+  string full_name = 3;
+  string legal_name = 4;
+  string place_of_birth = 5;
+  google.protobuf.Timestamp date_of_birth = 6;
+  double salary = 7;  // 64-bit floating-point number
+  string photo_ktp = 8;
+  string photo_selfie = 9;
+}
+
+message DeleteCustomerRequest {
+  string nik = 1;
+}
+
 service customerService {
   rpc GetCustomer(GetCustomerRequest) returns (GetCustomerResponse);
+  rpc CreateCustomer(CreateCustomerRequest) returns (google.protobuf.Empty);
+  rpc UpdateCustomer(UpdateCustomerRequest) returns (google.protobuf.Empty);
+  rpc DeleteCustomer(DeleteCustomerRequest) returns (google.protobuf.Empty);
 }

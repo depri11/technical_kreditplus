@@ -6,5 +6,5 @@ db:
     host: localhost
     user: username
     password: password
-    name: kreditplus
-    port: 5543
+    name: customer_service
+    port: 3306

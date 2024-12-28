@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 
-	"github.com/depri11/technical_kreditplus/config"
+	"github.com/depri11/technical_kreditplus/customer_service/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

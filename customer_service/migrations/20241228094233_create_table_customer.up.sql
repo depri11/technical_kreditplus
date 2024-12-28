@@ -1,5 +1,5 @@
-CREATE TABLE Customer (
-    id CHAR(36) PRIMARY KEY,  -- UUID format, 36 characters
+CREATE TABLE customer (
+    id BIGSERIAL PRIMARY KEY,  -- UUID format, using PostgreSQL UUID type
     nik VARCHAR(20) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
     legal_name VARCHAR(255) NOT NULL,

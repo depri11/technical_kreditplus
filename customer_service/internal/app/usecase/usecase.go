@@ -11,8 +11,8 @@ import (
 )
 
 type usecase struct {
-	repoArticle interfaces.CustomerRepository
-	tracer      trace.Tracer
+	repo   interfaces.CustomerRepository
+	tracer trace.Tracer
 }
 
 func NewUseCase(repoArticle interfaces.CustomerRepository, cfg *config.Config) *usecase {
@@ -21,5 +21,21 @@ func NewUseCase(repoArticle interfaces.CustomerRepository, cfg *config.Config) *
 }
 
 func (u *usecase) GetCustomer(ctx context.Context, id string) (*customer_proto.GetCustomerResponse, error) {
-	return nil, nil
+	customer, err := u.repo.GetCustomer(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return customer, nil
+}
+
+func (u *usecase) CreateCustomer(ctx context.Context, customer *customer_proto.CreateCustomerRequest) error {
+	return u.repo.CreateCusstomer(ctx, customer)
+}
+
+func (u *usecase) UpdateCustomer(ctx context.Context, customer *customer_proto.UpdateCustomerRequest) error {
+	return u.repo.UpdateCustomer(ctx, customer)
+}
+
+func (u *usecase) DeleteCustomer(ctx context.Context, id string) error {
+	return u.repo.DeleteCustomer(ctx, id)
 }

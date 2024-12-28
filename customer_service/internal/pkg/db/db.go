@@ -10,7 +10,7 @@ import (
 )
 
 func NewDatabase(db *config.Config) (*gorm.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", db.DB.User, db.DB.Password, db.DB.Host, db.DB.Port, db.DB.Name)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", db.DB.User, db.DB.Password, db.DB.Host, db.DB.Port, db.DB.Name)
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})

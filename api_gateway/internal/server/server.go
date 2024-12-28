@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/depri11/technical_kreditplus/config"
+	"github.com/depri11/technical_kreditplus/customer_service/config"
 	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
 )
@@ -33,7 +33,7 @@ func (s *server) Run() error {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
 
-	port := fmt.Sprintf(":%d", cfg.API.Port)
+	port := fmt.Sprintf(":%d", cfg.APP.Port)
 
 	go func() {
 		server := &http.Server{
