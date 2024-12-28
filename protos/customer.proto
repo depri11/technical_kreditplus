@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package customer_proto;
+
+option go_package = "./;customer_proto";
+
+message GetCustomerRequest {
+  string id = 1;
+}
+
+message GetCustomerResponse {
+  string id = 1;
+  string nik = 2;
+  string full_name = 3;
+  string legal_name = 4;
+  string place_of_birth = 5;
+  string date_of_birth = 6;
+  string salary = 7;
+  string photo_ktp = 8;
+  string photo_selfie = 9;
+}
+
+service customerService {
+  rpc GetCustomer(GetCustomerRequest) returns (GetCustomerResponse);
+}
