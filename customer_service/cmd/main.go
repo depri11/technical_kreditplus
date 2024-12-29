@@ -12,7 +12,7 @@ import (
 
 	"github.com/depri11/technical_kreditplus/customer_service/config"
 	"github.com/depri11/technical_kreditplus/customer_service/internal/app/delivery"
-	"github.com/depri11/technical_kreditplus/customer_service/internal/app/repository"
+	Repository "github.com/depri11/technical_kreditplus/customer_service/internal/app/repository"
 	"github.com/depri11/technical_kreditplus/customer_service/internal/app/usecase"
 	"github.com/depri11/technical_kreditplus/customer_service/internal/pkg/db"
 	"github.com/depri11/technical_kreditplus/customer_service/internal/pkg/opentelemetry"
@@ -57,7 +57,7 @@ func main() {
 	}
 	defer l.Close()
 
-	repo := repository.NewRepository(db, cfg)
+	repo := Repository.NewRepository(db, cfg)
 	usecase := usecase.NewUseCase(repo, cfg)
 	delivery := delivery.NewDelivery(usecase)
 

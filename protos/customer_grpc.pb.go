@@ -28,6 +28,8 @@ type CustomerServiceClient interface {
 	CreateCustomer(ctx context.Context, in *CreateCustomerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateCustomer(ctx context.Context, in *UpdateCustomerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteCustomer(ctx context.Context, in *DeleteCustomerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetCustomerLimit(ctx context.Context, in *GetCustomerLimitRequest, opts ...grpc.CallOption) (*GetCustomerLimitResponse, error)
+	UpdateCustomerLimit(ctx context.Context, in *UpdateCustomerLimitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type customerServiceClient struct {
@@ -83,6 +85,24 @@ func (c *customerServiceClient) DeleteCustomer(ctx context.Context, in *DeleteCu
 	return out, nil
 }
 
+func (c *customerServiceClient) GetCustomerLimit(ctx context.Context, in *GetCustomerLimitRequest, opts ...grpc.CallOption) (*GetCustomerLimitResponse, error) {
+	out := new(GetCustomerLimitResponse)
+	err := c.cc.Invoke(ctx, "/protos.customerService/GetCustomerLimit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *customerServiceClient) UpdateCustomerLimit(ctx context.Context, in *UpdateCustomerLimitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/protos.customerService/UpdateCustomerLimit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CustomerServiceServer is the server API for CustomerService service.
 // All implementations should embed UnimplementedCustomerServiceServer
 // for forward compatibility
@@ -92,6 +112,8 @@ type CustomerServiceServer interface {
 	CreateCustomer(context.Context, *CreateCustomerRequest) (*emptypb.Empty, error)
 	UpdateCustomer(context.Context, *UpdateCustomerRequest) (*emptypb.Empty, error)
 	DeleteCustomer(context.Context, *DeleteCustomerRequest) (*emptypb.Empty, error)
+	GetCustomerLimit(context.Context, *GetCustomerLimitRequest) (*GetCustomerLimitResponse, error)
+	UpdateCustomerLimit(context.Context, *UpdateCustomerLimitRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedCustomerServiceServer should be embedded to have forward compatible implementations.
@@ -112,6 +134,12 @@ func (UnimplementedCustomerServiceServer) UpdateCustomer(context.Context, *Updat
 }
 func (UnimplementedCustomerServiceServer) DeleteCustomer(context.Context, *DeleteCustomerRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCustomer not implemented")
+}
+func (UnimplementedCustomerServiceServer) GetCustomerLimit(context.Context, *GetCustomerLimitRequest) (*GetCustomerLimitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCustomerLimit not implemented")
+}
+func (UnimplementedCustomerServiceServer) UpdateCustomerLimit(context.Context, *UpdateCustomerLimitRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCustomerLimit not implemented")
 }
 
 // UnsafeCustomerServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -215,6 +243,42 @@ func _CustomerService_DeleteCustomer_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CustomerService_GetCustomerLimit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCustomerLimitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CustomerServiceServer).GetCustomerLimit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.customerService/GetCustomerLimit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CustomerServiceServer).GetCustomerLimit(ctx, req.(*GetCustomerLimitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CustomerService_UpdateCustomerLimit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCustomerLimitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CustomerServiceServer).UpdateCustomerLimit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.customerService/UpdateCustomerLimit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CustomerServiceServer).UpdateCustomerLimit(ctx, req.(*UpdateCustomerLimitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CustomerService_ServiceDesc is the grpc.ServiceDesc for CustomerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -241,6 +305,14 @@ var CustomerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCustomer",
 			Handler:    _CustomerService_DeleteCustomer_Handler,
+		},
+		{
+			MethodName: "GetCustomerLimit",
+			Handler:    _CustomerService_GetCustomerLimit_Handler,
+		},
+		{
+			MethodName: "UpdateCustomerLimit",
+			Handler:    _CustomerService_UpdateCustomerLimit_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

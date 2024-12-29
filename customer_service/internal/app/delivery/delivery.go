@@ -60,3 +60,21 @@ func (d *delivery) UpdateCustomer(ctx context.Context, req *customer_proto.Updat
 
 	return &emptypb.Empty{}, nil
 }
+
+func (d *delivery) GetCustomerLimit(ctx context.Context, req *customer_proto.GetCustomerLimitRequest) (*customer_proto.GetCustomerLimitResponse, error) {
+	result, err := d.usecase.GetCustomerLimit(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (d *delivery) UpdateCustomerLimit(ctx context.Context, req *customer_proto.UpdateCustomerLimitRequest) (*emptypb.Empty, error) {
+	err := d.usecase.UpdateCustomerLimit(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
+}

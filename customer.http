@@ -53,3 +53,20 @@ PUT http://localhost:8080/customer/123456789
 ################################
 
 DELETE http://localhost:8080/customer/123456789
+
+################################
+
+GET http://localhost:8080/customer/123456789/limits
+Content-Type: application/json
+
+################################
+
+PUT http://localhost:8080/customer/123456789/limits
+Content-Type: application/json
+
+{
+    "tenor_1_month": 1,
+    "tenor_2_months": 1,
+    "tenor_3_months": 1,
+    "tenor_4_months": 1
+}

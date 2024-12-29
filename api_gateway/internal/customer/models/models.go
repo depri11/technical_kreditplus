@@ -73,3 +73,30 @@ func (c *UpdateCustomerRequest) ToProto() (*customer_proto.UpdateCustomerRequest
 		PhotoSelfie:  c.PhotoSelfie,
 	}, nil
 }
+
+type GetCustomerLimitRequest struct {
+	CustomerId  string  `json:"customer_id"`
+	Tenor1Month float64 `gorm:"column:tenor_1_month"`
+	Tenor2Month float64 `gorm:"column:tenor_2_months"`
+	Tenor3Month float64 `gorm:"column:tenor_3_months"`
+	Tenor4Month float64 `gorm:"column:tenor_4_months"`
+}
+
+type UpdateCustomerLimitRequest struct {
+	Id          string  `json:"id"`
+	Nik         string  `json:"nik"`
+	Tenor1Month float64 `json:"tenor_1_month"`
+	Tenor2Month float64 `json:"tenor_2_months"`
+	Tenor3Month float64 `json:"tenor_3_months"`
+	Tenor4Month float64 `json:"tenor_4_months"`
+}
+
+func (c *UpdateCustomerLimitRequest) ToProto() (*customer_proto.UpdateCustomerLimitRequest, error) {
+	return &customer_proto.UpdateCustomerLimitRequest{
+		CustomerId:    c.Nik,
+		Tenor_1Month:  c.Tenor1Month,
+		Tenor_2Months: c.Tenor2Month,
+		Tenor_3Months: c.Tenor3Month,
+		Tenor_4Months: c.Tenor4Month,
+	}, nil
+}

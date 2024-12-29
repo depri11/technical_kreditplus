@@ -145,3 +145,57 @@ func (d *customerDelivery) DeleteCustomer(w http.ResponseWriter, r *http.Request
 	result.Success = true
 	result.ToJson(w)
 }
+
+func (d *customerDelivery) GetCustomerLimit(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+
+	ctx := r.Context()
+
+	result := models.GeneralResponse[*customer_proto.GetCustomerLimitResponse]{
+		Success: false,
+	}
+
+	data, err := d.customerUseCase.GetCustomerLimit(ctx, id)
+	if err != nil {
+		result.Message = err.Error()
+		result.ToJson(w)
+		return
+	}
+
+	result.Message = "Success Delete Customer"
+	result.Success = true
+	result.Data = data
+	result.ToJson(w)
+}
+
+func (d *customerDelivery) UpdateCustomerLimit(w http.ResponseWriter, r *http.Request) {
+	nik := mux.Vars(r)["nik"]
+
+	var payload customerModels.UpdateCustomerLimitRequest
+
+	result := models.GeneralResponse[any]{
+		Success: false,
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		result.Message = err.Error()
+		result.ToJson(w)
+		return
+	}
+
+	payload.Nik = nik
+
+	ctx := r.Context()
+
+	err = d.customerUseCase.UpdateCustomerLimit(ctx, &payload)
+	if err != nil {
+		result.Message = err.Error()
+		result.ToJson(w)
+		return
+	}
+
+	result.Message = "Success Update Customer Limit"
+	result.Success = true
+	result.ToJson(w)
+}

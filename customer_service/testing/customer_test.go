@@ -7,7 +7,7 @@ import (
 
 	"github.com/depri11/technical_kreditplus/customer_service/config"
 	"github.com/depri11/technical_kreditplus/customer_service/internal/app/delivery"
-	"github.com/depri11/technical_kreditplus/customer_service/internal/app/repository"
+	customer_repo "github.com/depri11/technical_kreditplus/customer_service/internal/app/repository"
 	"github.com/depri11/technical_kreditplus/customer_service/internal/app/usecase"
 	customer_proto "github.com/depri11/technical_kreditplus/protos"
 	"github.com/stretchr/testify/assert"
@@ -31,7 +31,7 @@ func Test_GetCustomer(t *testing.T) {
 		},
 	}
 
-	repo := repository.NewRepository(db, cfg)
+	repo := customer_repo.NewRepository(db, cfg)
 	usecase := usecase.NewUseCase(repo, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
@@ -114,7 +114,7 @@ func Test_DeleteCustomer(t *testing.T) {
 		},
 	}
 
-	repo := repository.NewRepository(db, cfg)
+	repo := customer_repo.NewRepository(db, cfg)
 	usecase := usecase.NewUseCase(repo, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
@@ -192,7 +192,7 @@ func Test_UpdateCustomer(t *testing.T) {
 		},
 	}
 
-	repo := repository.NewRepository(db, cfg)
+	repo := customer_repo.NewRepository(db, cfg)
 	usecase := usecase.NewUseCase(repo, cfg)
 	delivery := delivery.NewDelivery(usecase)
 

@@ -54,10 +54,32 @@ message GetCustomerByIdRequest {
   string id = 1;
 }
 
+message GetCustomerLimitRequest {
+  string id = 1;
+}
+
+message GetCustomerLimitResponse {
+  string customer_id = 1;
+  double tenor_1_month = 2;
+  double tenor_2_months = 3;
+  double tenor_3_months = 4;
+  double tenor_4_months = 5;
+}
+
+message UpdateCustomerLimitRequest {
+  string customer_id = 1;
+  double tenor_1_month = 2;
+  double tenor_2_months = 3;
+  double tenor_3_months = 4;
+  double tenor_4_months = 5;
+}
+
 service customerService {
   rpc GetCustomer(GetCustomerRequest) returns (GetCustomerResponse);
   rpc GetCustomerById(GetCustomerByIdRequest) returns (GetCustomerResponse);
   rpc CreateCustomer(CreateCustomerRequest) returns (google.protobuf.Empty);
   rpc UpdateCustomer(UpdateCustomerRequest) returns (google.protobuf.Empty);
   rpc DeleteCustomer(DeleteCustomerRequest) returns (google.protobuf.Empty);
+  rpc GetCustomerLimit(GetCustomerLimitRequest) returns (GetCustomerLimitResponse);
+  rpc UpdateCustomerLimit(UpdateCustomerLimitRequest) returns (google.protobuf.Empty);
 }

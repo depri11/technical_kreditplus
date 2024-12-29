@@ -12,4 +12,6 @@ type CustomerUsecase interface {
 	CreateCustomer(ctx context.Context, customer *customer_proto.CreateCustomerRequest) error
 	UpdateCustomer(ctx context.Context, customer *customer_proto.UpdateCustomerRequest) error
 	DeleteCustomer(ctx context.Context, id string) error
+	GetCustomerLimit(ctx context.Context, id string) (*customer_proto.GetCustomerLimitResponse, error)
+	UpdateCustomerLimit(ctx context.Context, req *customer_proto.UpdateCustomerLimitRequest) error
 }
