@@ -1,0 +1,55 @@
+POST http://localhost:8080/customer
+Content-Type: application/json
+
+// Invalid date of birth
+{
+  "nik": "123456789",
+  "fullname": "Devri",
+  "legal_name": "Devri",
+  "place_of_birth": "Indonesia",
+  "date_of_birth": "",
+  "salary": 10000,
+  "photo_ktp": "foto.jpg",
+  "photo_selfie": "selfie.jpg"
+}
+
+################################
+
+POST http://localhost:8080/customer
+Content-Type: application/json
+
+// Success create
+{
+  "nik": "123456789",
+  "fullname": "Devri",
+  "legal_name": "Devri",
+  "place_of_birth": "Indonesia",
+  "date_of_birth": "1990-01-01",
+  "salary": 10000,
+  "photo_ktp": "foto.jpg",
+  "photo_selfie": "selfie.jpg"
+}
+
+################################
+
+GET http://localhost:8080/customer/123456789
+Content-Type: application/json
+
+################################
+
+PUT http://localhost:8080/customer/123456789
+
+{
+  "nik": "123456789",
+  "fullname": "EDIT NAME",
+  "legal_name": "EDIT NAME",
+  "place_of_birth": "Indonesia",
+  "date_of_birth": "1999-01-01",
+  "salary": 10000,
+  "photo_ktp": "foto.jpg",
+  "photo_selfie": "selfie.jpg"
+}
+
+################################
+
+DELETE http://localhost:8080/customer/123456789

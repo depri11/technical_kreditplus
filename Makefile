@@ -14,3 +14,15 @@ transaction:
 test:
 	go test -v ./customer_service/testing
 	go test -v ./transaction_service/testing
+
+DB_SOURCE=postgresql://username:password@localhost:5432/$(DB_NAME)?sslmode=disable
+
+migrate-customer:
+	@echo "Migrating Customer database..."
+	@migrate -path customer_service/migrations -database "postgresql://username:password@localhost:5431/customer_service?sslmode=disable" --verbose up 1
+	@echo "Database migrated."
+
+migrate-transaction:
+	@echo "Migrating Transaction database..."
+	@migrate -path transaction_service/migrations -database "postgresql://username:password@localhost:5432/transaction_service?sslmode=disable" --verbose up 1
+	@echo "Database migrated."

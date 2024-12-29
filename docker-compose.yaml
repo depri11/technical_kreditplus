@@ -1,24 +1,63 @@
 version: '3.8'
 
 services:
-    mysql:
-        image: mysql:latest
-        container_name: db-mysql
+    customer-db:
+        image: postgres:latest
         environment:
-            MYSQL_ROOT_PASSWORD: root-password
-            MYSQL_DATABASE: kreditplus
-            MYSQL_USER: username
-            MYSQL_PASSWORD: password
+            - POSTGRES_USER=username
+            - POSTGRES_PASSWORD=password
+            - POSTGRES_DB=customer_service
         ports:
-            - '3306:3306'
+            - '5431:5432'
         volumes:
-            - mysql-data:/var/lib/mysql
-            - ./my-custom.cnf:/etc/mysql/conf.d/custom.cnf
+            - customer-db-data:/var/lib/postgresql/data
         networks:
             - my-network
 
-volumes:
-    mysql-data:
+    transaction-db:
+        image: postgres:latest
+        environment:
+            - POSTGRES_USER=username
+            - POSTGRES_PASSWORD=password
+            - POSTGRES_DB=transaction_service
+        ports:
+            - '5432:5432'
+        volumes:
+            - transaction-db-data:/var/lib/postgresql/data
+        networks:
+            - my-network
+
+    api:
+        build: ./api-gateway
+        ports:
+            - '8080:8080'
+        depends_on:
+            - customer-service
+            - transaction-service
+        networks:
+            - my-network
+
+    customer-service:
+        build: ./customer-service
+        ports:
+            - '8081:8081'
+        depends_on:
+            - customer-db
+        networks:
+            - my-network
+
+    transaction-service:
+        build: ./transaction-service
+        ports:
+            - '8082:8082'
+        depends_on:
+            - transaction-db
+        networks:
+            - my-network
 
 networks:
     my-network:
+
+volumes:
+    customer-db-data:
+    transaction-db-data:

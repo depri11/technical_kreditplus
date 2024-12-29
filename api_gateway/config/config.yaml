@@ -1,0 +1,11 @@
+app:
+    service_name: api_gateway
+    port: 8080
+
+customer_service:
+    service_name: customer_service
+    port: 8081
+
+transaction_service:
+    service_name: transaction_service
+    port: 8082

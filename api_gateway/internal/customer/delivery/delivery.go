@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/depri11/technical_kreditplus/api_gateway/internal/customer/interfaces"
+	customerModels "github.com/depri11/technical_kreditplus/api_gateway/internal/customer/models"
+	"github.com/depri11/technical_kreditplus/api_gateway/internal/models"
 	customer_proto "github.com/depri11/technical_kreditplus/protos"
 	"github.com/gorilla/mux"
 )
@@ -20,40 +22,126 @@ func NewDelivery(customerUseCase interfaces.CustomerUsecase, r *mux.Router) *cus
 }
 
 func (d *customerDelivery) GetCustomer(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	nik := mux.Vars(r)["nik"]
 
 	ctx := context.Background()
-	result, err := d.customerUseCase.GetCustomer(ctx, id)
+
+	result := models.GeneralResponse[*customerModels.GetCustomerResponse]{
+		Success: false,
+	}
+
+	customer, err := d.customerUseCase.GetCustomer(ctx, nik)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		result.Message = err.Error()
+		result.ToJson(w)
 		return
 	}
 
-	resByte, err := json.Marshal(result)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	result.Message = "Success"
+	result.Success = true
+	result.Data = &customerModels.GetCustomerResponse{
+		Nik:          customer.Nik,
+		FullName:     customer.FullName,
+		LegalName:    customer.LegalName,
+		PlaceOfBirth: customer.PlaceOfBirth,
+		DateOfBirth:  customer.DateOfBirth.AsTime().Format("2006-01-02"),
+		Salary:       customer.Salary,
+		PhotoKtp:     customer.PhotoKtp,
+		PhotoSelfie:  customer.PhotoSelfie,
 	}
-
-	w.Write(resByte)
+	result.ToJson(w)
 }
 
-func (d *customerDelivery) CreateArticle(w http.ResponseWriter, r *http.Request) {
-	var payload customer_proto.CreateCustomerRequest
+func (d *customerDelivery) CreateCustomer(w http.ResponseWriter, r *http.Request) {
+	var payload customerModels.CreateCustomerRequest
+
+	result := models.GeneralResponse[*customer_proto.GetCustomerResponse]{
+		Success: false,
+	}
 
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		result.Message = err.Error()
+		result.ToJson(w)
+		return
+	}
+
+	protoModel, err := payload.ToProto()
+	if err != nil {
+		result.Message = err.Error()
+		result.ToJson(w)
 		return
 	}
 
 	ctx := r.Context()
 
-	err = d.customerUseCase.CreateCustomer(ctx, &payload)
+	err = d.customerUseCase.CreateCustomer(ctx, protoModel)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		result.Message = err.Error()
+		result.ToJson(w)
 		return
 	}
 
-	w.Write([]byte("{}"))
+	result.Message = "Success Create Customer"
+	result.Success = true
+	result.ToJson(w)
+}
+
+func (d *customerDelivery) UpdateCustomer(w http.ResponseWriter, r *http.Request) {
+	nik := mux.Vars(r)["nik"]
+
+	var payload customerModels.UpdateCustomerRequest
+
+	result := models.GeneralResponse[*customerModels.UpdateCustomerRequest]{
+		Success: false,
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		result.Message = err.Error()
+		result.ToJson(w)
+		return
+	}
+
+	payload.Nik = nik
+
+	ctx := r.Context()
+	transactionProto, err := payload.ToProto()
+	if err != nil {
+		result.Message = err.Error()
+		result.ToJson(w)
+		return
+	}
+	err = d.customerUseCase.UpdateCustomer(ctx, transactionProto)
+	if err != nil {
+		result.Message = err.Error()
+		result.ToJson(w)
+		return
+	}
+
+	result.Message = "Success Update Customer"
+	result.Success = true
+	result.Data = &payload
+	result.ToJson(w)
+}
+
+func (d *customerDelivery) DeleteCustomer(w http.ResponseWriter, r *http.Request) {
+	nik := mux.Vars(r)["nik"]
+
+	ctx := r.Context()
+
+	result := models.GeneralResponse[*customer_proto.UpdateCustomerRequest]{
+		Success: false,
+	}
+
+	err := d.customerUseCase.DeleteCustomer(ctx, nik)
+	if err != nil {
+		result.Message = err.Error()
+		result.ToJson(w)
+		return
+	}
+
+	result.Message = "Success Delete Customer"
+	result.Success = true
+	result.ToJson(w)
 }

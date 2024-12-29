@@ -78,7 +78,7 @@ func main() {
 		}
 	}()
 
-	log.Printf("GRPC Server Article is listening on port: %v", port)
+	log.Printf("GRPC Server Transaction is listening on port: %v", port)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
@@ -90,5 +90,5 @@ func main() {
 		log.Println("ctx.Done:", done)
 	}
 
-	log.Println("Server GRPC Article Exited Properly")
+	log.Println("Server GRPC Transaction Exited Properly")
 }

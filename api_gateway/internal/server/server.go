@@ -10,9 +10,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/depri11/technical_kreditplus/customer_service/config"
+	"github.com/depri11/technical_kreditplus/api_gateway/config"
+	customerDelivery "github.com/depri11/technical_kreditplus/api_gateway/internal/customer/delivery"
+	customerUsecase "github.com/depri11/technical_kreditplus/api_gateway/internal/customer/usecase"
+	transactionDelivery "github.com/depri11/technical_kreditplus/api_gateway/internal/transaction/delivery"
+	transactionUsecase "github.com/depri11/technical_kreditplus/api_gateway/internal/transaction/usecase"
+	"github.com/depri11/technical_kreditplus/protos"
 	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
+	"google.golang.org/grpc"
 )
 
 type server struct {
@@ -29,6 +35,32 @@ func (s *server) Run() error {
 	defer cancel()
 
 	cfg := config.NewConfig()
+
+	customerServicePort := fmt.Sprintf(":%d", cfg.CUSTOMER_SERVICE.Port)
+	customerServiceconn, err := grpc.DialContext(ctx, customerServicePort, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer customerServiceconn.Close()
+
+	customerClient := protos.NewCustomerServiceClient(customerServiceconn)
+
+	transactionServicePort := fmt.Sprintf(":%d", cfg.TRANSACTION_SERVICE.Port)
+	transactionServiceconn, err := grpc.DialContext(ctx, transactionServicePort, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer transactionServiceconn.Close()
+
+	transactionClient := protos.NewTransactionServiceClient(customerServiceconn)
+
+	csUsecase := customerUsecase.NewArticleUseCase(customerClient)
+	csDelivery := customerDelivery.NewDelivery(csUsecase, s.mux)
+	csDelivery.Routes()
+
+	trxUsecase := transactionUsecase.NewArticleUseCase(transactionClient)
+	trxDelivery := transactionDelivery.NewDelivery(trxUsecase, s.mux)
+	trxDelivery.Routes()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)

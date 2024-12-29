@@ -25,7 +25,7 @@ func NewRepository(db *gorm.DB, cfg *config.Config) *repository {
 
 func (r *repository) GetTransaction(ctx context.Context, contractNumber string) (*transaction_proto.GetTransactionResponse, error) {
 	var transaction models.Transaction
-	err := r.db.Table("transactions").Where("contract_number = ?", contractNumber).Find(&transaction).Error
+	err := r.db.WithContext(ctx).Table("transactions").Where("contract_number = ?", contractNumber).Find(&transaction).Error
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (r *repository) CreateTransaction(ctx context.Context, transactionProto *tr
 		CreatedAt:         timestamppb.Now().AsTime(),
 		UpdatedAt:         timestamppb.Now().AsTime(),
 	}
-	return r.db.Table("transactions").Create(&transaction).Error
+	return r.db.WithContext(ctx).Table("transactions").Create(&transaction).Error
 }
 
 func (r *repository) UpdateTransaction(ctx context.Context, transactionProto *transaction_proto.UpdateTransactionRequest) error {
@@ -88,7 +88,7 @@ func (r *repository) UpdateTransaction(ctx context.Context, transactionProto *tr
 		UpdatedAt:         timestamppb.Now().AsTime(),
 	}
 
-	result := r.db.Table("transactions").Save(&transaction)
+	result := r.db.WithContext(ctx).Table("transactions").Save(&transaction)
 
 	if result.Error != nil {
 		return result.Error
@@ -123,7 +123,7 @@ func (r *repository) DeleteTransaction(ctx context.Context, contractNumber strin
 		AssetName:         transactionDB.AssetName,
 	}
 
-	result := r.db.Table("transactions").Where("contract_number = ?", contractNumber).Delete(&transaction)
+	result := r.db.WithContext(ctx).Table("transactions").Where("contract_number = ?", contractNumber).Delete(&transaction)
 
 	if result.Error != nil {
 		return result.Error

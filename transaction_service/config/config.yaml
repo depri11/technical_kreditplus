@@ -1,10 +1,10 @@
 app:
-    service_name: customer_service
-    port: 8081
+    service_name: transaction_service
+    port: 8082
 
 db:
     host: localhost
     user: username
     password: password
-    name: customer_service
-    port: 3306
+    name: transaction_service
+    port: 5432
