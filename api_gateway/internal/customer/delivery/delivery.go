@@ -40,6 +40,7 @@ func (d *customerDelivery) GetCustomer(w http.ResponseWriter, r *http.Request) {
 	result.Message = "Success"
 	result.Success = true
 	result.Data = &customerModels.GetCustomerResponse{
+		Id:           customer.Id,
 		Nik:          customer.Nik,
 		FullName:     customer.FullName,
 		LegalName:    customer.LegalName,

@@ -55,7 +55,7 @@ message GetCustomerByIdRequest {
 }
 
 message GetCustomerLimitRequest {
-  string id = 1;
+  string customer_id = 1;
 }
 
 message GetCustomerLimitResponse {

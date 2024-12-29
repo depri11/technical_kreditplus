@@ -26,7 +26,7 @@ func (d *delivery) GetCustomer(ctx context.Context, req *customer_proto.GetCusto
 }
 
 func (d *delivery) GetCustomerById(ctx context.Context, req *customer_proto.GetCustomerByIdRequest) (*customer_proto.GetCustomerResponse, error) {
-	result, err := d.usecase.GetCustomer(ctx, req.Id)
+	result, err := d.usecase.GetCustomerById(ctx, req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (d *delivery) UpdateCustomer(ctx context.Context, req *customer_proto.Updat
 }
 
 func (d *delivery) GetCustomerLimit(ctx context.Context, req *customer_proto.GetCustomerLimitRequest) (*customer_proto.GetCustomerLimitResponse, error) {
-	result, err := d.usecase.GetCustomerLimit(ctx, req.Id)
+	result, err := d.usecase.GetCustomerLimit(ctx, req.CustomerId)
 	if err != nil {
 		return nil, err
 	}

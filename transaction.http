@@ -2,30 +2,14 @@ POST http://localhost:8080/transaction
 Content-Type: application/json
 
 {
-  "customer_id": "1",
+  "customer_id": "3",
   "contract_number": "123456789",
   "otr": 10000.00,
   "admin_fee": 2000.00,
   "installment_amount": 50000.00,
-  "intereset_amount": 10000.00,
-  "assert_name": "my_asset"
-}
-
-################################
-
-POST http://localhost:8080/transaction
-Content-Type: application/json
-
-// Success create
-{
-  "nik": "123456789",
-  "fullname": "Devri",
-  "legal_name": "Devri",
-  "place_of_birth": "Indonesia",
-  "date_of_birth": "1990-01-01",
-  "salary": 10000,
-  "photo_ktp": "foto.jpg",
-  "photo_selfie": "selfie.jpg"
+  "interest_amount": 10000.00,
+  "asset_name": "my_asset",
+  "tenor": 1
 }
 
 ################################

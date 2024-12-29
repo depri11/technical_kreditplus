@@ -11,4 +11,6 @@ type TransactionRepository interface {
 	CreateTransaction(ctx context.Context, transaction *transaction_proto.CreateTransactionRequest) error
 	UpdateTransaction(ctx context.Context, transaction *transaction_proto.UpdateTransactionRequest) error
 	DeleteTransaction(ctx context.Context, id string) error
+
+	Transaction(ctx context.Context, fn func(repo TransactionRepository) error) error
 }

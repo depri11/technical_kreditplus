@@ -7,7 +7,7 @@ import (
 	transaction_proto "github.com/depri11/technical_kreditplus/protos"
 	"github.com/depri11/technical_kreditplus/transaction_service/config"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/delivery"
-	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/repository"
+	Repository "github.com/depri11/technical_kreditplus/transaction_service/internal/app/repository"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/usecase"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -29,7 +29,7 @@ func Test_GetTransaction(t *testing.T) {
 		},
 	}
 
-	repo := repository.NewRepository(db, cfg)
+	repo := Repository.NewRepository(db, cfg)
 	usecase := usecase.NewUseCase(repo, nil, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
@@ -103,7 +103,7 @@ func Test_DeleteTransaction(t *testing.T) {
 		},
 	}
 
-	repo := repository.NewRepository(db, cfg)
+	repo := Repository.NewRepository(db, cfg)
 	usecase := usecase.NewUseCase(repo, nil, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
@@ -176,7 +176,7 @@ func Test_UpdateTransaction(t *testing.T) {
 		},
 	}
 
-	repo := repository.NewRepository(db, cfg)
+	repo := Repository.NewRepository(db, cfg)
 	usecase := usecase.NewUseCase(repo, nil, cfg)
 	delivery := delivery.NewDelivery(usecase)
 

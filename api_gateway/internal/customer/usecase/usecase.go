@@ -52,7 +52,7 @@ func (u *customerUseCase) DeleteCustomer(ctx context.Context, nik string) error 
 }
 
 func (u *customerUseCase) GetCustomerLimit(ctx context.Context, id string) (*customer_proto.GetCustomerLimitResponse, error) {
-	result, err := u.customerClient.GetCustomerLimit(ctx, &customer_proto.GetCustomerLimitRequest{Id: id})
+	result, err := u.customerClient.GetCustomerLimit(ctx, &customer_proto.GetCustomerLimitRequest{CustomerId: id})
 	if err != nil {
 		return nil, err
 	}

@@ -4,7 +4,7 @@ Content-Type: application/json
 // Invalid date of birth
 {
   "nik": "123456789",
-  "fullname": "Devri",
+  "full_name": "Devri",
   "legal_name": "Devri",
   "place_of_birth": "Indonesia",
   "date_of_birth": "",
@@ -21,7 +21,7 @@ Content-Type: application/json
 // Success create
 {
   "nik": "123456789",
-  "fullname": "Devri",
+  "full_name": "Devri",
   "legal_name": "Devri",
   "place_of_birth": "Indonesia",
   "date_of_birth": "1990-01-01",

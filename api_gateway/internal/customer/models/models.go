@@ -8,6 +8,7 @@ import (
 )
 
 type GetCustomerResponse struct {
+	Id           string  `json:"id"`
 	Nik          string  `json:"nik"`
 	FullName     string  `json:"full_name"`
 	LegalName    string  `json:"legal_name"`

@@ -7,6 +7,14 @@ package protos;
 
 option go_package = "./protos;protos";
 
+enum Tenor {
+  TENOR_UNSPECIFIED = 0;
+  TENOR_1_MONTH = 1;
+  TENOR_2_MONTH = 2;
+  TENOR_3_MONTH = 3;
+  TENOR_4_MONTH = 4;
+}
+
 message CreateTransactionRequest {
   string id = 1;
   string customer_id = 2;
@@ -16,6 +24,7 @@ message CreateTransactionRequest {
   double installment_amount = 6;
   double interest_amount = 7;
   string asset_name = 8;
+  Tenor tenor = 9;
 }
 
 message GetTransactionRequest {

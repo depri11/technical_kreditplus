@@ -1,4 +1,4 @@
-package repository
+package Repository
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	transaction_proto "github.com/depri11/technical_kreditplus/protos"
 	"github.com/depri11/technical_kreditplus/transaction_service/config"
+	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/interfaces"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/models"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -13,17 +14,23 @@ import (
 	"gorm.io/gorm"
 )
 
-type repository struct {
+type Repository struct {
 	db     *gorm.DB
 	tracer trace.Tracer
 }
 
-func NewRepository(db *gorm.DB, cfg *config.Config) *repository {
+func NewRepository(db *gorm.DB, cfg *config.Config) *Repository {
 	tracer := otel.Tracer(cfg.APP.ServiceName)
-	return &repository{db, tracer}
+	return &Repository{db, tracer}
 }
 
-func (r *repository) GetTransaction(ctx context.Context, contractNumber string) (*transaction_proto.GetTransactionResponse, error) {
+func (r *Repository) withTx(tx *gorm.DB) interfaces.TransactionRepository {
+	return &Repository{
+		db: tx,
+	}
+}
+
+func (r *Repository) GetTransaction(ctx context.Context, contractNumber string) (*transaction_proto.GetTransactionResponse, error) {
 	var transaction models.Transaction
 	err := r.db.WithContext(ctx).Table("transactions").Where("contract_number = ?", contractNumber).Find(&transaction).Error
 	if err != nil {
@@ -50,7 +57,7 @@ func (r *repository) GetTransaction(ctx context.Context, contractNumber string) 
 	return transactionProto, nil
 }
 
-func (r *repository) CreateTransaction(ctx context.Context, transactionProto *transaction_proto.CreateTransactionRequest) error {
+func (r *Repository) CreateTransaction(ctx context.Context, transactionProto *transaction_proto.CreateTransactionRequest) error {
 	transaction := &models.Transaction{
 		ContractNumber:    transactionProto.ContractNumber,
 		CustomerId:        transactionProto.CustomerId,
@@ -65,7 +72,7 @@ func (r *repository) CreateTransaction(ctx context.Context, transactionProto *tr
 	return r.db.WithContext(ctx).Table("transactions").Create(&transaction).Error
 }
 
-func (r *repository) UpdateTransaction(ctx context.Context, transactionProto *transaction_proto.UpdateTransactionRequest) error {
+func (r *Repository) UpdateTransaction(ctx context.Context, transactionProto *transaction_proto.UpdateTransactionRequest) error {
 	transactionDB, err := r.GetTransaction(ctx, transactionProto.ContractNumber)
 	if err != nil {
 		return err
@@ -101,7 +108,7 @@ func (r *repository) UpdateTransaction(ctx context.Context, transactionProto *tr
 	return nil
 }
 
-func (r *repository) DeleteTransaction(ctx context.Context, contractNumber string) error {
+func (r *Repository) DeleteTransaction(ctx context.Context, contractNumber string) error {
 	transactionDB, err := r.GetTransaction(ctx, contractNumber)
 	if err != nil {
 		return err
@@ -133,4 +140,19 @@ func (r *repository) DeleteTransaction(ctx context.Context, contractNumber strin
 		return gorm.ErrRecordNotFound
 	}
 	return nil
+}
+
+func (r *Repository) Transaction(ctx context.Context, fn func(repo interfaces.TransactionRepository) error) error {
+	tx := r.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	repo := r.withTx(tx)
+	err := fn(repo)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }

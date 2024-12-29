@@ -7,6 +7,7 @@ import (
 
 	"github.com/depri11/technical_kreditplus/api_gateway/internal/models"
 	"github.com/depri11/technical_kreditplus/api_gateway/internal/transaction/interfaces"
+	trx_model "github.com/depri11/technical_kreditplus/api_gateway/internal/transaction/models"
 	transaction_proto "github.com/depri11/technical_kreditplus/protos"
 	"github.com/gorilla/mux"
 )
@@ -25,7 +26,7 @@ func (d *transactionDelivery) GetTransaction(w http.ResponseWriter, r *http.Requ
 
 	ctx := context.Background()
 
-	result := models.GeneralResponse[*transaction_proto.GetTransactionResponse]{
+	result := models.GeneralResponse[*trx_model.GetTransactionResponse]{
 		Success: false,
 	}
 
@@ -36,9 +37,22 @@ func (d *transactionDelivery) GetTransaction(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	data := &trx_model.GetTransactionResponse{
+		Id:                transaction.Id,
+		CustomerId:        transaction.CustomerId,
+		ContractNumber:    transaction.ContractNumber,
+		Otr:               transaction.Otr,
+		AdminFee:          transaction.AdminFee,
+		InstallmentAmount: transaction.InstallmentAmount,
+		InterestAmount:    transaction.InterestAmount,
+		AssetName:         transaction.AssetName,
+		CreatedAt:         transaction.CreatedAt.AsTime(),
+		UpdatedAt:         transaction.UpdatedAt.AsTime(),
+	}
+
 	result.Message = "Success"
 	result.Success = true
-	result.Data = transaction
+	result.Data = data
 	result.ToJson(w)
 }
 

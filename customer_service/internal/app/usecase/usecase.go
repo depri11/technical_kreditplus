@@ -32,7 +32,7 @@ func (u *usecase) GetCustomer(ctx context.Context, nik string) (*customer_proto.
 }
 
 func (u *usecase) GetCustomerById(ctx context.Context, id string) (*customer_proto.GetCustomerResponse, error) {
-	customer, err := u.repo.GetCustomer(ctx, id)
+	customer, err := u.repo.GetCustomerById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -99,12 +99,8 @@ func (u *usecase) DeleteCustomer(ctx context.Context, nik string) error {
 	})
 }
 
-func (u *usecase) GetCustomerLimit(ctx context.Context, nik string) (*customer_proto.GetCustomerLimitResponse, error) {
-	customer, err := u.repo.GetCustomer(ctx, nik)
-	if err != nil {
-		return nil, err
-	}
-	customerLimit, err := u.repo.GetCustomerLimit(ctx, customer.Id)
+func (u *usecase) GetCustomerLimit(ctx context.Context, id string) (*customer_proto.GetCustomerLimitResponse, error) {
+	customerLimit, err := u.repo.GetCustomerLimit(ctx, id)
 	if err != nil {
 		return nil, err
 	}

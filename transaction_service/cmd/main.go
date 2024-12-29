@@ -14,7 +14,7 @@ import (
 	transaction_proto "github.com/depri11/technical_kreditplus/protos"
 	"github.com/depri11/technical_kreditplus/transaction_service/config"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/delivery"
-	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/repository"
+	Repository "github.com/depri11/technical_kreditplus/transaction_service/internal/app/repository"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/usecase"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/pkg/db"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/pkg/opentelemetry"
@@ -67,7 +67,7 @@ func main() {
 
 	customerClient := protos.NewCustomerServiceClient(customerServiceconn)
 
-	repo := repository.NewRepository(db, cfg)
+	repo := Repository.NewRepository(db, cfg)
 	usecase := usecase.NewUseCase(repo, customerClient, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
