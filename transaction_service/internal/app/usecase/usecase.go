@@ -11,6 +11,7 @@ import (
 	"github.com/shopspring/decimal"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/sync/errgroup"
 )
 
 type usecase struct {
@@ -34,27 +35,43 @@ func (u *usecase) GetTransaction(ctx context.Context, id string) (*transaction_p
 
 func (u *usecase) CreateTransaction(ctx context.Context, transaction *transaction_proto.CreateTransactionRequest) error {
 	// check customer data
-	req := &transaction_proto.GetCustomerByIdRequest{
-		Id: transaction.CustomerId,
-	}
-	customer, err := u.customerRepo.GetCustomerById(ctx, req)
-	if err != nil {
+	var g errgroup.Group
+
+	// Create a variable to hold customer and customerLimit
+	var customer *transaction_proto.GetCustomerResponse
+	var customerLimit *transaction_proto.GetCustomerLimitResponse
+
+	// Get customer by ID
+	g.Go(func() error {
+		req := &transaction_proto.GetCustomerByIdRequest{
+			Id: transaction.CustomerId,
+		}
+		var err error
+		customer, err = u.customerRepo.GetCustomerById(ctx, req)
+		return err
+	})
+
+	// Get customer limit
+	g.Go(func() error {
+		limitReq := &transaction_proto.GetCustomerLimitRequest{
+			CustomerId: transaction.CustomerId,
+		}
+		var err error
+		customerLimit, err = u.customerRepo.GetCustomerLimit(ctx, limitReq)
+		return err
+	})
+
+	// Wait for both goroutines to finish
+	if err := g.Wait(); err != nil {
 		return err
 	}
 
+	// Check if customer is nil or customer.Nik is empty
 	if customer == nil || customer.Nik == "" {
 		return errors.New("Customer not found")
 	}
 
-	// check customer limits
-	limitReq := &transaction_proto.GetCustomerLimitRequest{
-		CustomerId: transaction.CustomerId,
-	}
-	customerLimit, err := u.customerRepo.GetCustomerLimit(ctx, limitReq)
-	if err != nil {
-		return err
-	}
-
+	// Check if customerLimit is nil
 	if customerLimit == nil {
 		return errors.New("Customer limit not found")
 	}
