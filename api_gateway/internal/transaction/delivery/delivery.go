@@ -21,7 +21,7 @@ func NewDelivery(transactionUseCase interfaces.TransactionUsecase, r *mux.Router
 }
 
 func (d *transactionDelivery) GetTransaction(w http.ResponseWriter, r *http.Request) {
-	nik := mux.Vars(r)["nik"]
+	contractNumber := mux.Vars(r)["contract_number"]
 
 	ctx := context.Background()
 
@@ -29,7 +29,7 @@ func (d *transactionDelivery) GetTransaction(w http.ResponseWriter, r *http.Requ
 		Success: false,
 	}
 
-	transaction, err := d.transactionUseCase.GetTransaction(ctx, nik)
+	transaction, err := d.transactionUseCase.GetTransaction(ctx, contractNumber)
 	if err != nil {
 		result.Message = err.Error()
 		result.ToJson(w)
@@ -100,7 +100,7 @@ func (d *transactionDelivery) UpdateTransaction(w http.ResponseWriter, r *http.R
 }
 
 func (d *transactionDelivery) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
-	nik := mux.Vars(r)["nik"]
+	contractNumber := mux.Vars(r)["contract_number"]
 
 	ctx := r.Context()
 
@@ -108,7 +108,7 @@ func (d *transactionDelivery) DeleteTransaction(w http.ResponseWriter, r *http.R
 		Success: false,
 	}
 
-	err := d.transactionUseCase.DeleteTransaction(ctx, nik)
+	err := d.transactionUseCase.DeleteTransaction(ctx, contractNumber)
 	if err != nil {
 		result.Message = err.Error()
 		result.ToJson(w)

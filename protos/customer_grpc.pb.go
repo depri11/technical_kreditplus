@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CustomerServiceClient interface {
 	GetCustomer(ctx context.Context, in *GetCustomerRequest, opts ...grpc.CallOption) (*GetCustomerResponse, error)
+	GetCustomerById(ctx context.Context, in *GetCustomerByIdRequest, opts ...grpc.CallOption) (*GetCustomerResponse, error)
 	CreateCustomer(ctx context.Context, in *CreateCustomerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateCustomer(ctx context.Context, in *UpdateCustomerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteCustomer(ctx context.Context, in *DeleteCustomerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -40,6 +41,15 @@ func NewCustomerServiceClient(cc grpc.ClientConnInterface) CustomerServiceClient
 func (c *customerServiceClient) GetCustomer(ctx context.Context, in *GetCustomerRequest, opts ...grpc.CallOption) (*GetCustomerResponse, error) {
 	out := new(GetCustomerResponse)
 	err := c.cc.Invoke(ctx, "/protos.customerService/GetCustomer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *customerServiceClient) GetCustomerById(ctx context.Context, in *GetCustomerByIdRequest, opts ...grpc.CallOption) (*GetCustomerResponse, error) {
+	out := new(GetCustomerResponse)
+	err := c.cc.Invoke(ctx, "/protos.customerService/GetCustomerById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,6 +88,7 @@ func (c *customerServiceClient) DeleteCustomer(ctx context.Context, in *DeleteCu
 // for forward compatibility
 type CustomerServiceServer interface {
 	GetCustomer(context.Context, *GetCustomerRequest) (*GetCustomerResponse, error)
+	GetCustomerById(context.Context, *GetCustomerByIdRequest) (*GetCustomerResponse, error)
 	CreateCustomer(context.Context, *CreateCustomerRequest) (*emptypb.Empty, error)
 	UpdateCustomer(context.Context, *UpdateCustomerRequest) (*emptypb.Empty, error)
 	DeleteCustomer(context.Context, *DeleteCustomerRequest) (*emptypb.Empty, error)
@@ -89,6 +100,9 @@ type UnimplementedCustomerServiceServer struct {
 
 func (UnimplementedCustomerServiceServer) GetCustomer(context.Context, *GetCustomerRequest) (*GetCustomerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCustomer not implemented")
+}
+func (UnimplementedCustomerServiceServer) GetCustomerById(context.Context, *GetCustomerByIdRequest) (*GetCustomerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCustomerById not implemented")
 }
 func (UnimplementedCustomerServiceServer) CreateCustomer(context.Context, *CreateCustomerRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCustomer not implemented")
@@ -125,6 +139,24 @@ func _CustomerService_GetCustomer_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CustomerServiceServer).GetCustomer(ctx, req.(*GetCustomerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CustomerService_GetCustomerById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCustomerByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CustomerServiceServer).GetCustomerById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.customerService/GetCustomerById",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CustomerServiceServer).GetCustomerById(ctx, req.(*GetCustomerByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -193,6 +225,10 @@ var CustomerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCustomer",
 			Handler:    _CustomerService_GetCustomer_Handler,
+		},
+		{
+			MethodName: "GetCustomerById",
+			Handler:    _CustomerService_GetCustomerById_Handler,
 		},
 		{
 			MethodName: "CreateCustomer",

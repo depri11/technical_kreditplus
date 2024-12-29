@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/depri11/technical_kreditplus/protos"
 	transaction_proto "github.com/depri11/technical_kreditplus/protos"
 	"github.com/depri11/technical_kreditplus/transaction_service/config"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/delivery"
@@ -57,8 +58,17 @@ func main() {
 	}
 	defer l.Close()
 
+	customerServicePort := fmt.Sprintf(":%d", cfg.CUSTOMER_SERVICE.Port)
+	customerServiceconn, err := grpc.DialContext(ctx, customerServicePort, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer customerServiceconn.Close()
+
+	customerClient := protos.NewCustomerServiceClient(customerServiceconn)
+
 	repo := repository.NewRepository(db, cfg)
-	usecase := usecase.NewUseCase(repo, cfg)
+	usecase := usecase.NewUseCase(repo, customerClient, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
 	server := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{

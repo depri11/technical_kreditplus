@@ -1,8 +1,9 @@
 package config
 
 type Config struct {
-	DB  DB  `mapstructure:"db"`
-	APP App `mapstructure:"app"`
+	DB               DB  `mapstructure:"db"`
+	APP              App `mapstructure:"app"`
+	CUSTOMER_SERVICE App `mapstructure:"customer_service"`
 }
 
 type App struct {

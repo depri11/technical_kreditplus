@@ -8,3 +8,7 @@ db:
     password: password
     name: transaction_service
     port: 5432
+
+customer_service:
+    service_name: customer_service
+    port: 8081

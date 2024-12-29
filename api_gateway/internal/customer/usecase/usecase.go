@@ -10,7 +10,7 @@ type customerUseCase struct {
 	customerClient customer_proto.CustomerServiceClient
 }
 
-func NewArticleUseCase(customerClient customer_proto.CustomerServiceClient) *customerUseCase {
+func NewCustomerUseCase(customerClient customer_proto.CustomerServiceClient) *customerUseCase {
 	return &customerUseCase{customerClient}
 }
 

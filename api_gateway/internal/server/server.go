@@ -52,13 +52,13 @@ func (s *server) Run() error {
 	}
 	defer transactionServiceconn.Close()
 
-	transactionClient := protos.NewTransactionServiceClient(customerServiceconn)
+	transactionClient := protos.NewTransactionServiceClient(transactionServiceconn)
 
-	csUsecase := customerUsecase.NewArticleUseCase(customerClient)
+	csUsecase := customerUsecase.NewCustomerUseCase(customerClient)
 	csDelivery := customerDelivery.NewDelivery(csUsecase, s.mux)
 	csDelivery.Routes()
 
-	trxUsecase := transactionUsecase.NewArticleUseCase(transactionClient)
+	trxUsecase := transactionUsecase.NewTransactionUseCase(transactionClient)
 	trxDelivery := transactionDelivery.NewDelivery(trxUsecase, s.mux)
 	trxDelivery.Routes()
 

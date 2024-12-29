@@ -50,8 +50,13 @@ message DeleteCustomerRequest {
   string nik = 1;
 }
 
+message GetCustomerByIdRequest {
+  string id = 1;
+}
+
 service customerService {
   rpc GetCustomer(GetCustomerRequest) returns (GetCustomerResponse);
+  rpc GetCustomerById(GetCustomerByIdRequest) returns (GetCustomerResponse);
   rpc CreateCustomer(CreateCustomerRequest) returns (google.protobuf.Empty);
   rpc UpdateCustomer(UpdateCustomerRequest) returns (google.protobuf.Empty);
   rpc DeleteCustomer(DeleteCustomerRequest) returns (google.protobuf.Empty);

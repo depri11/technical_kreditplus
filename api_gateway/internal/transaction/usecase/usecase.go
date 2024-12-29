@@ -10,7 +10,7 @@ type transactionUseCase struct {
 	transactionClient transaction_proto.TransactionServiceClient
 }
 
-func NewArticleUseCase(transactionClient transaction_proto.TransactionServiceClient) *transactionUseCase {
+func NewTransactionUseCase(transactionClient transaction_proto.TransactionServiceClient) *transactionUseCase {
 	return &transactionUseCase{transactionClient}
 }
 

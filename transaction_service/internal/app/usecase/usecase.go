@@ -2,7 +2,9 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
+	"github.com/depri11/technical_kreditplus/protos"
 	transaction_proto "github.com/depri11/technical_kreditplus/protos"
 	"github.com/depri11/technical_kreditplus/transaction_service/config"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/interfaces"
@@ -11,13 +13,14 @@ import (
 )
 
 type usecase struct {
-	repo   interfaces.TransactionRepository
-	tracer trace.Tracer
+	repo         interfaces.TransactionRepository
+	customerRepo protos.CustomerServiceClient
+	tracer       trace.Tracer
 }
 
-func NewUseCase(repoArticle interfaces.TransactionRepository, cfg *config.Config) *usecase {
+func NewUseCase(repo interfaces.TransactionRepository, customerRepo protos.CustomerServiceClient, cfg *config.Config) *usecase {
 	tracer := otel.Tracer(cfg.APP.ServiceName)
-	return &usecase{repoArticle, tracer}
+	return &usecase{repo, customerRepo, tracer}
 }
 
 func (u *usecase) GetTransaction(ctx context.Context, id string) (*transaction_proto.GetTransactionResponse, error) {
@@ -29,6 +32,19 @@ func (u *usecase) GetTransaction(ctx context.Context, id string) (*transaction_p
 }
 
 func (u *usecase) CreateTransaction(ctx context.Context, transaction *transaction_proto.CreateTransactionRequest) error {
+	// check customer data
+	req := &transaction_proto.GetCustomerByIdRequest{
+		Id: transaction.Id,
+	}
+	customer, err := u.customerRepo.GetCustomerById(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	if customer == nil || customer.Nik == "" {
+		return errors.New("Customer not found")
+	}
+
 	return u.repo.CreateTransaction(ctx, transaction)
 }
 

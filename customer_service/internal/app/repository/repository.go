@@ -49,6 +49,32 @@ func (r *repository) GetCustomer(ctx context.Context, nik string) (*customer_pro
 	return customerProto, nil
 }
 
+func (r *repository) GetCustomerById(ctx context.Context, id string) (*customer_proto.GetCustomerResponse, error) {
+	var customer models.Customer
+	err := r.db.WithContext(ctx).Table("customers").Where("id = ?", id).Find(&customer).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if customer.Id == 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+
+	customerProto := &customer_proto.GetCustomerResponse{
+		Id:           strconv.Itoa(int(customer.Id)),
+		Nik:          customer.Nik,
+		FullName:     customer.FullName,
+		LegalName:    customer.LegalName,
+		PlaceOfBirth: customer.PlaceOfBirth,
+		DateOfBirth:  timestamppb.New(customer.DateOfBirth),
+		Salary:       customer.Salary,
+		PhotoKtp:     customer.PhotoKtp,
+		PhotoSelfie:  customer.PhotoSelfie,
+	}
+
+	return customerProto, nil
+}
+
 func (r *repository) CreateCustomer(ctx context.Context, customerProto *customer_proto.CreateCustomerRequest) error {
 	customer := &models.Customer{
 		Nik:          customerProto.Nik,

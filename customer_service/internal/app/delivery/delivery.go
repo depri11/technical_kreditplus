@@ -25,6 +25,15 @@ func (d *delivery) GetCustomer(ctx context.Context, req *customer_proto.GetCusto
 	return result, nil
 }
 
+func (d *delivery) GetCustomerById(ctx context.Context, req *customer_proto.GetCustomerByIdRequest) (*customer_proto.GetCustomerResponse, error) {
+	result, err := d.usecase.GetCustomer(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (d *delivery) CreateCustomer(ctx context.Context, req *customer_proto.CreateCustomerRequest) (*emptypb.Empty, error) {
 	err := d.usecase.CreateCustomer(ctx, req)
 	if err != nil {

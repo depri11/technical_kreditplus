@@ -20,7 +20,15 @@ func NewUseCase(repoArticle interfaces.CustomerRepository, cfg *config.Config) *
 	return &usecase{repoArticle, tracer}
 }
 
-func (u *usecase) GetCustomer(ctx context.Context, id string) (*customer_proto.GetCustomerResponse, error) {
+func (u *usecase) GetCustomer(ctx context.Context, nik string) (*customer_proto.GetCustomerResponse, error) {
+	customer, err := u.repo.GetCustomer(ctx, nik)
+	if err != nil {
+		return nil, err
+	}
+	return customer, nil
+}
+
+func (u *usecase) GetCustomerById(ctx context.Context, id string) (*customer_proto.GetCustomerResponse, error) {
 	customer, err := u.repo.GetCustomer(ctx, id)
 	if err != nil {
 		return nil, err

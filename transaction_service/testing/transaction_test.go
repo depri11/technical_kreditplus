@@ -30,7 +30,7 @@ func Test_GetTransaction(t *testing.T) {
 	}
 
 	repo := repository.NewRepository(db, cfg)
-	usecase := usecase.NewUseCase(repo, cfg)
+	usecase := usecase.NewUseCase(repo, nil, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
 	tests := []struct {
@@ -104,7 +104,7 @@ func Test_DeleteTransaction(t *testing.T) {
 	}
 
 	repo := repository.NewRepository(db, cfg)
-	usecase := usecase.NewUseCase(repo, cfg)
+	usecase := usecase.NewUseCase(repo, nil, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
 	tests := []struct {
@@ -177,7 +177,7 @@ func Test_UpdateTransaction(t *testing.T) {
 	}
 
 	repo := repository.NewRepository(db, cfg)
-	usecase := usecase.NewUseCase(repo, cfg)
+	usecase := usecase.NewUseCase(repo, nil, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
 	tests := []struct {
