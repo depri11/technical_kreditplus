@@ -5,9 +5,10 @@ This project is a loan tenure system designed with a microservice architecture t
 The Loan Tenure System includes several microservices, each responsible for different aspects of the application, such as customer management, loan limit management, and transaction processing. By leveraging microservices and gRPC, the system ensures efficient communication, scalability, and maintainability.
 
 # Architecture Diagram
+<img src="architecture_diagram.png" alt="Architecture Diagram" width="500" />
 
 # Flowchart Diagram
-![flowchart](flowchart_pinjaman.png)
+<img src="flowchart_pinjaman.png" alt="Flowchart Diagram" width="500" />
 
 # Structure Database
 #### Customer
@@ -16,7 +17,7 @@ The Loan Tenure System includes several microservices, each responsible for diff
 #### Transaction
 ![DB Customer](transaction_service.png)
 
-# Run
+# Run App
 you just have to run the command below
 `docker-compose up -d`
 and wait for all services to run successfully
