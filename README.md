@@ -7,12 +7,12 @@ The Loan Tenure System includes several microservices, each responsible for diff
 # Architecture Diagram
 <img src="architecture_diagram.png" alt="Architecture Diagram" width="500" />
 
-# Flowchart Diagram
-<img src="flowchart_pinjaman.png" alt="Flowchart Diagram" width="500" />
-
 # Structure Database
 #### Customer
 ![DB Customer](customer_service.png)
+
+# Flowchart Diagram
+<img src="flowchart_pinjaman.png" alt="Flowchart Diagram" width="500" />
 
 #### Transaction
 ![DB Customer](transaction_service.png)
