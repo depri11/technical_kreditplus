@@ -2,8 +2,9 @@ package testing_test
 
 import (
 	"context"
-	"net"
+	"errors"
 	"testing"
+	"time"
 
 	"github.com/depri11/technical_kreditplus/protos"
 	transaction_proto "github.com/depri11/technical_kreditplus/protos"
@@ -11,32 +12,13 @@ import (
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/delivery"
 	Repository "github.com/depri11/technical_kreditplus/transaction_service/internal/app/repository"
 	"github.com/depri11/technical_kreditplus/transaction_service/internal/app/usecase"
+	customer_mock "github.com/depri11/technical_kreditplus/transaction_service/testing/mock"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/test/bufconn"
+	"github.com/stretchr/testify/mock"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
-
-const bufSize = 1024 * 1024
-
-var lis *bufconn.Listener
-
-func startCustomerServiceServer() *grpc.Server {
-	lis = bufconn.Listen(bufSize)
-	s := grpc.NewServer()
-	protos.RegisterCustomerServiceServer(s, protos.UnimplementedCustomerServiceServer{})
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			panic(err)
-		}
-	}()
-	return s
-}
-
-func bufDialer(context.Context, string) (net.Conn, error) {
-	return lis.Dial()
-}
 
 func Test_GetTransaction(t *testing.T) {
 	cfg := &config.Config{
@@ -304,20 +286,11 @@ func Test_CreateTransaction(t *testing.T) {
 		},
 	}
 
-	// Start the in-process gRPC server
-	server := startCustomerServiceServer()
-	defer server.Stop()
-
-	// Set up gRPC client connection
-	conn, err := grpc.DialContext(context.Background(), "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
-	if err != nil {
-		t.Fatalf("Failed to dial bufnet: %v", err)
-	}
-	defer conn.Close()
-	customerClient := protos.NewCustomerServiceClient(conn)
+	// Create a new instance of the mock customer service
+	mockCustomerService := new(customer_mock.MockCustomerService)
 
 	repo := Repository.NewRepository(db, cfg)
-	usecase := usecase.NewUseCase(repo, customerClient, cfg)
+	usecase := usecase.NewUseCase(repo, mockCustomerService, cfg)
 	delivery := delivery.NewDelivery(usecase)
 
 	tests := []struct {
@@ -328,25 +301,164 @@ func Test_CreateTransaction(t *testing.T) {
 		cleanUp   func()
 	}{
 		{
-			"Create Transaction Request",
+			"Invalid tenor",
 			&transaction_proto.CreateTransactionRequest{
 				ContractNumber: "123456789",
 			},
-			nil,
+			errors.New("Invalid tenor"),
 			func() {
-				err := repo.CreateTransaction(context.Background(), &transaction_proto.CreateTransactionRequest{
-					CustomerId:        "CUSTOMERID-1",
-					ContractNumber:    "123456789",
-					Otr:               5000000.00,
-					AdminFee:          500000.00,
-					InstallmentAmount: 500000.00,
-					InterestAmount:    500000.00,
-					AssetName:         "Asset 1",
-				})
-				assert.Nil(t, err)
+				mockCustomerService.On("GetCustomerById", mock.Anything, &protos.GetCustomerByIdRequest{Id: ""}).Return(&protos.GetCustomerResponse{
+					Id:           "1",
+					FullName:     "Devri",
+					Nik:          "123456789",
+					LegalName:    "Devri",
+					PlaceOfBirth: "Jakarta",
+					DateOfBirth:  timestamppb.New(time.Now()),
+					Salary:       5000000.00,
+					PhotoKtp:     "ktp.jpg",
+					PhotoSelfie:  "selfie.jpg",
+				}, nil)
+				mockCustomerService.On("GetCustomerLimit", mock.Anything, &protos.GetCustomerLimitRequest{CustomerId: ""}).Return(&protos.GetCustomerLimitResponse{
+					CustomerId:   "1",
+					Tenor_1Month: 10000000000.00,
+				}, nil)
+				mockCustomerService.On("UpdateCustomerLimit", mock.Anything, &protos.UpdateCustomerLimitRequest{Tenor_1Month: 9998000000}).Return(nil, nil)
 			},
 			func() {
-				repo.DeleteTransaction(context.Background(), "123456789")
+			},
+		},
+		{
+			"Customer And Customer Limit Not Found",
+			&transaction_proto.CreateTransactionRequest{
+				ContractNumber: "123456789",
+			},
+			errors.New("Customer not found"),
+			func() {
+				mockCustomerService.On("GetCustomerById", mock.Anything, &protos.GetCustomerByIdRequest{Id: ""}).Return(&protos.GetCustomerResponse{}, nil)
+				mockCustomerService.On("GetCustomerLimit", mock.Anything, &protos.GetCustomerLimitRequest{CustomerId: ""}).Return(&protos.GetCustomerLimitResponse{}, nil)
+			},
+			func() {
+			},
+		},
+		{
+			"Customer Limit Not Found",
+			&transaction_proto.CreateTransactionRequest{
+				ContractNumber: "123456789",
+			},
+			errors.New("Customer limit not found"),
+			func() {
+				mockCustomerService.On("GetCustomerById", mock.Anything, &protos.GetCustomerByIdRequest{Id: ""}).Return(&protos.GetCustomerResponse{
+					Id:           "1",
+					FullName:     "Devri",
+					Nik:          "123456789",
+					LegalName:    "Devri",
+					PlaceOfBirth: "Jakarta",
+					DateOfBirth:  timestamppb.New(time.Now()),
+					Salary:       5000000.00,
+					PhotoKtp:     "ktp.jpg",
+					PhotoSelfie:  "selfie.jpg",
+				}, nil)
+				mockCustomerService.On("GetCustomerLimit", mock.Anything, &protos.GetCustomerLimitRequest{CustomerId: ""}).Return(nil, nil)
+			},
+			func() {
+			},
+		},
+		{
+			"Tenor limit does not meet the minimum",
+			&transaction_proto.CreateTransactionRequest{
+				ContractNumber:    "123456789",
+				Otr:               500000.00,
+				AdminFee:          500000.00,
+				InstallmentAmount: 500000.00,
+				InterestAmount:    500000.00,
+				AssetName:         "Rumah",
+				Tenor:             protos.Tenor_TENOR_1_MONTH,
+			},
+			errors.New("Transaction amount exceeds the limit for 1 month tenor"),
+			func() {
+				mockCustomerService.On("GetCustomerById", mock.Anything, &protos.GetCustomerByIdRequest{Id: ""}).Return(&protos.GetCustomerResponse{
+					Id:           "1",
+					FullName:     "Devri",
+					Nik:          "123456789",
+					LegalName:    "Devri",
+					PlaceOfBirth: "Jakarta",
+					DateOfBirth:  timestamppb.New(time.Now()),
+					Salary:       5000000.00,
+					PhotoKtp:     "ktp.jpg",
+					PhotoSelfie:  "selfie.jpg",
+				}, nil)
+				mockCustomerService.On("GetCustomerLimit", mock.Anything, &protos.GetCustomerLimitRequest{CustomerId: ""}).Return(&protos.GetCustomerLimitResponse{
+					CustomerId:   "1",
+					Tenor_1Month: 1.00,
+				}, nil)
+			},
+			func() {
+			},
+		},
+		{
+			"Failed update customer limit",
+			&transaction_proto.CreateTransactionRequest{
+				ContractNumber:    "123456789",
+				Otr:               500000.00,
+				AdminFee:          500000.00,
+				InstallmentAmount: 500000.00,
+				InterestAmount:    500000.00,
+				AssetName:         "Rumah",
+				Tenor:             protos.Tenor_TENOR_1_MONTH,
+			},
+			errors.New("error updating customer limit"),
+			func() {
+				mockCustomerService.On("GetCustomerById", mock.Anything, &protos.GetCustomerByIdRequest{Id: ""}).Return(&protos.GetCustomerResponse{
+					Id:           "1",
+					FullName:     "Devri",
+					Nik:          "123456789",
+					LegalName:    "Devri",
+					PlaceOfBirth: "Jakarta",
+					DateOfBirth:  timestamppb.New(time.Now()),
+					Salary:       5000000.00,
+					PhotoKtp:     "ktp.jpg",
+					PhotoSelfie:  "selfie.jpg",
+				}, nil)
+				mockCustomerService.On("GetCustomerLimit", mock.Anything, &protos.GetCustomerLimitRequest{CustomerId: ""}).Return(&protos.GetCustomerLimitResponse{
+					CustomerId:   "1",
+					Tenor_1Month: 10000000000.00,
+				}, nil)
+				mockCustomerService.On("UpdateCustomerLimit", mock.Anything, &protos.UpdateCustomerLimitRequest{Tenor_1Month: 9998000000}).Return(nil, errors.New("error updating customer limit"))
+			},
+			func() {
+			},
+		},
+		{
+			"Create Transaction Request",
+			&transaction_proto.CreateTransactionRequest{
+				ContractNumber:    "123456789",
+				Otr:               500000.00,
+				AdminFee:          500000.00,
+				InstallmentAmount: 500000.00,
+				InterestAmount:    500000.00,
+				AssetName:         "Rumah",
+				Tenor:             protos.Tenor_TENOR_1_MONTH,
+			},
+			nil,
+			func() {
+				mockCustomerService.On("GetCustomerById", mock.Anything, &protos.GetCustomerByIdRequest{Id: ""}).Return(&protos.GetCustomerResponse{
+					Id:           "1",
+					FullName:     "Devri",
+					Nik:          "123456789",
+					LegalName:    "Devri",
+					PlaceOfBirth: "Jakarta",
+					DateOfBirth:  timestamppb.New(time.Now()),
+					Salary:       5000000.00,
+					PhotoKtp:     "ktp.jpg",
+					PhotoSelfie:  "selfie.jpg",
+				}, nil)
+				mockCustomerService.On("GetCustomerLimit", mock.Anything, &protos.GetCustomerLimitRequest{CustomerId: ""}).Return(&protos.GetCustomerLimitResponse{
+					CustomerId:   "1",
+					Tenor_1Month: 10000000000.00,
+				}, nil)
+				mockCustomerService.On("UpdateCustomerLimit", mock.Anything, &protos.UpdateCustomerLimitRequest{Tenor_1Month: 9998000000}).Return(nil, nil)
+			},
+			func() {
 			},
 		},
 	}
@@ -356,6 +468,11 @@ func Test_CreateTransaction(t *testing.T) {
 			tt.prepare()
 			_, err := delivery.CreateTransaction(context.Background(), tt.request)
 			assert.Equal(t, tt.wantError, err)
+
+			mockCustomerService.ExpectedCalls = nil
+			mockCustomerService.Calls = nil
+
+			tt.cleanUp()
 		})
 	}
 }
