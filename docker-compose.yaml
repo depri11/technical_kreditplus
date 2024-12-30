@@ -28,7 +28,9 @@ services:
             - my-network
 
     api:
-        build: ./api-gateway
+        build:
+            context: ./api_gateway
+            dockerfile: deployments/Dockerfile
         ports:
             - '8080:8080'
         depends_on:
@@ -38,7 +40,9 @@ services:
             - my-network
 
     customer-service:
-        build: ./customer-service
+        build:
+            context: ./customer_service
+            dockerfile: deployments/Dockerfile
         ports:
             - '8081:8081'
         depends_on:
@@ -47,7 +51,9 @@ services:
             - my-network
 
     transaction-service:
-        build: ./transaction-service
+        build:
+            context: ./transaction-service
+            dockerfile: deployments/Dockerfile
         ports:
             - '8082:8082'
         depends_on:
