@@ -11,11 +11,11 @@ The Loan Tenure System includes several microservices, each responsible for diff
 #### Customer
 ![DB Customer](customer_service.png)
 
-# Flowchart Diagram
-<img src="flowchart_pinjaman.png" alt="Flowchart Diagram" width="500" />
-
 #### Transaction
 ![DB Customer](transaction_service.png)
+
+# Flowchart Diagram
+<img src="flowchart_pinjaman.png" alt="Flowchart Diagram" width="500" />
 
 # Run App
 you just have to run the command below
